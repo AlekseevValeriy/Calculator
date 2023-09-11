@@ -132,30 +132,34 @@ class MainWindow(QtWidgets.QMainWindow, program.Ui_Calculator):
 
     @dec
     def square_root_action(self):
-        sq_number = float(self.numbers_place_string)
+        if self.n_1 and self.action:
+            self.numbers_place.setText(str(self.action_list[self.action](float(self.n_1), float(self.numbers_place_string))))
+        sq_number = float(self.numbers_place.toPlainText())
         sq_number = sq_number ** 0.5
         self.numbers_place.setText(str(sq_number))
 
     @dec
     def from_dec_action(self):
-        n = float(self.numbers_place_string) if self.numbers_place_string.isdigit() else 0.0
-        s = float(self.system_place.toPlainText()) if self.system_place.toPlainText().isdigit() and 2 <= float(self.system_place.toPlainText()) <= 16 else 0.0
-        n_s = ""
-        while n >= s:
-            symbol = str(n % s)
-            if int(symbol) > 9:
-                symbol = self.symbols[symbol]
-            n_s += symbol
-            n = n // s
-        n_s += str(n)
-        self.numbers_place.setText("".join(list(reversed(list(n_s)))))
+        if self.numbers_place_string.isdigit() and self.system_place.toPlainText().isdigit():
+            n = int(self.numbers_place_string)
+            s = int(self.system_place.toPlainText()) if self.system_place.toPlainText().isdigit() and 2 <= int(self.system_place.toPlainText()) <= 16 else 2
+            n_s = ""
+            while n >= s:
+                symbol = str(n % s)
+                if int(symbol) > 9:
+                    symbol = self.symbols[symbol]
+                n_s += symbol
+                n = n // s
+            n_s += str(n)
+            self.numbers_place.setText("".join(list(reversed(list(n_s)))))
 
     @dec
     def in_dec_action(self):
-        n = float(self.numbers_place_string) if self.numbers_place_string.isdigit() else 0.0
-        s = float(self.system_place.toPlainText())
-        n = [(float(symbol[1]), symbol[0]) for symbol in enumerate("".join(list(reversed(list(str(n))))))]
-        self.numbers_place.setText(str(sum([x[0] * s ** float(x[1]) for x in n])))
+        if self.numbers_place_string.isdigit() and self.system_place.toPlainText().isdigit():
+            n = int(self.numbers_place_string)
+            s = int(self.system_place.toPlainText())
+            n = [(int(symbol[1]), symbol[0]) for symbol in enumerate("".join(list(reversed(list(str(n))))))]
+            self.numbers_place.setText(str(sum([x[0] * s ** int(x[1]) for x in n])))
 
     @dec
     def sign_action(self, sign):
@@ -168,9 +172,11 @@ class MainWindow(QtWidgets.QMainWindow, program.Ui_Calculator):
 
     @dec
     def equally_action(self):
-        self.numbers_place.setText(str(self.action_list[self.action](float(self.n_1), float(self.numbers_place_string))))
-        self.action = ""
-        self.n_1 = ""
+        if self.action:
+            self.numbers_place.setText(
+                str(self.action_list[self.action](float(self.n_1), float(self.numbers_place_string))))
+            self.action = ""
+            self.n_1 = ""
 
 
 if __name__ == "__main__":
